@@ -41,9 +41,9 @@ d3.json('us.json', function(error, json) {
   d3.csv("data.csv")
     .row(function(d) {
       return {
+        case: d.Case,
         lat: parseFloat(d.latitude),
         lng: parseFloat(d.longitude),
-        case: d.Case,
         date2: moment(d.Date, "MM/DD/YY").format('YYYY-MM-DD'),
         date: moment(d.Date, "MM/DD/YY").unix()
       }})
@@ -58,7 +58,7 @@ d3.json('us.json', function(error, json) {
 var displayLocations = function(data) {
   var locations = svg.selectAll('.location')
     .data(data, function(d){
-      return d.Case
+      return d.case
     })
 
   locations.enter().append('circle')
@@ -89,7 +89,6 @@ d3.select('#slider').call(d3.slider()
       return location.date < val
     })
 
-    console.log("New set size ", newData);
     displayLocations(newData)
   })
 )
