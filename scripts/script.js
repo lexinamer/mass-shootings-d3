@@ -44,13 +44,11 @@ d3.json('us.json', function(error, json) {
         case: d.Case,
         lat: parseFloat(d.latitude),
         lng: parseFloat(d.longitude),
-        date2: moment(d.Date, "MM/DD/YY").format('YYYY-MM-DD'),
-        date: moment(d.Date, "MM/DD/YY").unix()
+        date: parseFloat(d.Year)
       }})
     .get(function(err, rows) {
       if (err) return console.error(err);
       locationData = rows;
-      console.log(rows);
     });
 });
 
@@ -77,18 +75,14 @@ var displayLocations = function(data) {
 };
 
 // Slider
-var min = moment('08/20/82', "MM/DD/YY").unix();
-console.log(min);
-var max = moment('02/14/18', "MM/DD/YY").unix();
-console.log(max);
-
 d3.select('#slider').call(d3.slider()
-  .axis(true).min(min).max(max)
-  .on('slide', function(evt, val){
+  .axis(true).min(1980).max(2020)
+  .on("slide", function(evt, val) {
+    d3.select('#year').text(val.toFixed(0));
+
     var newData = locationData.filter(function(location){
       return location.date < val
     })
-
     displayLocations(newData)
   })
 )
