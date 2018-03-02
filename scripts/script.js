@@ -44,11 +44,14 @@ d3.json('us.json', function(error, json) {
         case: d.Case,
         lat: parseFloat(d.latitude),
         lng: parseFloat(d.longitude),
-        date: parseFloat(d.Year)
+        date: parseFloat(d.Year),
+        injured: parseFloat(d.Injured),
+        fatalities: parseFloat(d.Fatalities)
       }})
     .get(function(err, rows) {
       if (err) return console.error(err);
       locationData = rows;
+      // console.log(locationData);
     });
 });
 
@@ -59,14 +62,15 @@ var displayLocations = function(data) {
       return d.case
     })
 
-  locations.enter().append('circle')
-    .attr('class', 'location')
-    .attr("transform", function(d) {
-      return "translate(" + projection([d.lng,d.lat]) + ")";
-    })
-    .attr('r', 1)
-    .transition().duration(400)
-      .attr("r", 5);
+  locations.enter()
+    .append('circle')
+      .attr('class', 'location')
+      .attr("transform", function(d) {
+        return "translate(" + projection([d.lng,d.lat]) + ")";
+      })
+      .attr('r', 1)
+      .transition().duration(400)
+        .attr("r", 5);
 
   locations.exit()
     .transition().duration(200)
@@ -74,15 +78,35 @@ var displayLocations = function(data) {
       .remove();
 };
 
+
+// Set up text creation
+var displayText = function(data) {
+  d3.select('#injured')
+    .selectAll('span')
+    .data(data)
+    .enter()
+    .append('span')
+    .text(function(d){
+      return d.injured;
+    })
+};
+
+
 // Slider
 d3.select('#slider').call(d3.slider()
   .axis(true).min(1980).max(2020)
   .on("slide", function(evt, val) {
-    d3.select('#year').text(val.toFixed(0));
+    console.log(val);
+    d3.select('#year').text(val.toFixed(0))
 
-    var newData = locationData.filter(function(location){
-      return location.date < val
+    var newData = locationData.filter(function(d){
+      return d.date < val
+    })
+
+    var textData = locationData.filter(function(d){
+      return d.injured < 300
     })
     displayLocations(newData)
+    displayText(textData)
   })
 )
